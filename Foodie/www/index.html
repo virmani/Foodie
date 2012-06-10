@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>Cordova WP7</title>
+    <link rel="stylesheet" href="master.css" type="text/css" media="screen" title="no title"
+        charset="utf-8" />
+    <script type="text/javascript" charset="utf-8" src="cordova-1.8.0.js"></script>
+    <script type="text/javascript">
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        // once the device ready event fires, you can safely do your thing! -jm
+        function onDeviceReady() {
+            console.log("onDeviceReady. You should see this message in Visual Studio's output window.");
+        }
+
+        // A button will call this function
+        //
+        function capturePhoto() {
+            navigator.camera.getPicture(onSuccess, onFail, { quality: 100,
+                destinationType: Camera.DestinationType.FILE_URI,
+                encodingType: Camera.EncodingType.PNG,
+            });
+        }
+
+        function onSuccess(imageUri) {
+            var image = document.getElementById('myImage');
+            image.style.display = 'block';
+            image.src = imageUri;
+            uploadPhoto(imageUri);
+        }
+
+        function onFail(message) {
+            alert('Failed because: ' + message);
+        }
+
+        function uploadPhoto(imageURI) {
+            var options = new FileUploadOptions();
+            options.fileKey="file";
+            options.fileName=imageURI.substr(imageURI.lastIndexOf('/')+1);
+            options.mimeType="image/jpeg";
+ 
+//            var params = new Object();
+//            params.value1 = "test";
+//            params.value2 = "param";
+ 
+            //options.params = params;
+            options.chunkedMode = false;
+ 
+            console.log("uploading file: " + imageURI);
+            var ft = new FileTransfer();
+            ft.upload(imageURI, "http://foodie.nodejitsu.com/upload", win, fail, options);
+        }
+
+        function win(r) {
+            console.log("Code = " + r.responseCode);
+            console.log("Response = " + r.response);
+            console.log("Sent = " + r.bytesSent);
+            //alert(r.response);
+        }
+ 
+        function fail(error) {
+            alert("An error has occurred: Code = " + error.code);
+        }
+ 
+    </script>
+</head>
+<body>
+    <center>
+        <h1>
+            Hello Cordova</h1>
+        <img alt="image" id="myImage" style="display: none; margin-bottom: 30px;" width="300"
+            src="" />
+        <button style="height: 80px; width: 300px; position: absolute; bottom: 0; left: 3%"
+            onclick="capturePhoto();">
+            Capture Photo
+        </button>
+    </center>
+    <br />
+</body>
+</html>
